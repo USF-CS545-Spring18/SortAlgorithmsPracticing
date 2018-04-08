@@ -1,5 +1,6 @@
 package sorting;
 
+import java.io.*;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -299,7 +300,29 @@ public class SortingAlgorithms  implements SortInterface {
      */
     public void externalSort(String inputFile, String outputFile, int n, int m) {
         // FILL IN CODE
-
+        double dTimes = (double) n / m;
+        int times = (int) Math.ceil(dTimes);
+        int k = 0;
+        try(BufferedReader reader = new BufferedReader(new FileReader(inputFile))){
+            String line;
+            Comparable[] temp = new Comparable[m];
+            for(int i = 0; i < m; i++){
+                line = reader.readLine();
+                if(line == null) break;
+                int num = Integer.parseInt(line);
+                temp[i] = num;
+            }
+            quickSort(temp, 0, m - 1);
+            try(PrintWriter pw = new PrintWriter("temp" + k)){
+                for(int i = 0; i < m; i++){
+                    pw.write(temp[i] + "\n");
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private class MaxHeap {
