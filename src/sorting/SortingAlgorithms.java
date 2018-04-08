@@ -1,5 +1,8 @@
 package sorting;
 
+import java.util.LinkedList;
+import java.util.Random;
+
 /**  A class that implements SortInterface. Has various methods
  *   to sort a list of elements. */
 public class SortingAlgorithms  implements SortInterface {
@@ -17,7 +20,7 @@ public class SortingAlgorithms  implements SortInterface {
         // FILL ON CODE
         Comparable curr;
         int j;
-        for (int i = lowindex; i < highindex; i++) {
+        for (int i = lowindex; i <= highindex; i++) {
             curr = array[i];
             j = i - 1;
             if(reversed){
@@ -79,7 +82,7 @@ public class SortingAlgorithms  implements SortInterface {
      * @param mid
      * @param high
      */
-    public static void merge(Comparable[] arr, Comparable[] temp, int low, int mid, int high) {
+    private static void merge(Comparable[] arr, Comparable[] temp, int low, int mid, int high) {
         int k = low;
         int i = low;
         int j = mid + 1;
@@ -133,7 +136,74 @@ public class SortingAlgorithms  implements SortInterface {
     @Override
     public void randomizedQuickSort(Comparable[] array, int lowindex, int highindex) {
         // FILL ON CODE
+        quickSort(array, lowindex, highindex);
     }
+
+    /**
+     * Quick sort method that takes low and high indices
+     * @param arr array to sort
+     * @param low the index where we should start sorting the array
+     * @param high the index where we want to finish sorting the array
+     */
+    private void quickSort(Comparable[] arr, int low, int high) {
+        int pivot; // index of the pivot
+        if (low < high) {
+            pivot = partition(arr, low, high);
+            quickSort(arr, low, pivot - 1);
+            quickSort(arr, pivot + 1, high);
+        }
+    }
+
+    /**
+     * Helper method for quickSort.
+     * @param arr array of integers
+     * @param low the starting value of i
+     * @param high the starting value of j
+     * @return
+     */
+    private int partition(Comparable[] arr, int low, int high) {
+        Comparable pivot;
+        Comparable tmp;
+        Random random = new Random();
+        int p1 = low + random.nextInt(high - low + 1);
+        int p2 = low + random.nextInt(high - low + 1);
+        int p3 = low + random.nextInt(high - low + 1);
+        int max = high;
+        int pivotIndex = findTheMidian(p1, p2, p3);
+
+        tmp = arr[pivotIndex];
+        arr[pivotIndex] = arr[high];
+        arr[high] = tmp;
+        pivot = arr[high];
+        low--;
+        do {
+            while ((low < high) && (arr[++low].compareTo(pivot) < 0))
+                ;
+            while ((low < high) && (arr[--high].compareTo(pivot) > 0))
+                ;
+            // swap values at low and high
+            tmp = arr[low];
+            arr[low] = arr[high];
+            arr[high] = tmp;
+        } while (low < high);
+        tmp = arr[low];
+        arr[low] = arr[max];
+        arr[max] = tmp;
+        return low;
+    }
+
+    public int findTheMidian(int i1, int i2, int i3){
+        int median = i3;
+        if(i1 <= i2){
+            if(i1 >= i3) median = i1;
+            if(i2 <= i3) median = i2;
+        }else {
+            if(i2 >= i3) median = i2;
+            if(i1 <= i3) median = i1;
+        }
+        return median;
+    }
+
 
     /**
      * Sorts a given sublist using hybrid sort, where the list is sorted
@@ -146,6 +216,16 @@ public class SortingAlgorithms  implements SortInterface {
     @Override
     public void hybridSort(Comparable[] array, int lowindex, int highindex) {
         // FILL ON CODE
+        int pivot; // index of the pivot
+        if(highindex - lowindex + 1 <= 10){
+            insertionSort(array, lowindex, highindex, false);
+            return;
+        }
+        if (lowindex < highindex) {
+            pivot = partition(array, lowindex, highindex);
+            hybridSort(array, lowindex, pivot - 1);
+            hybridSort(array, pivot + 1, highindex);
+        }
     }
 
     /**
@@ -158,6 +238,56 @@ public class SortingAlgorithms  implements SortInterface {
     @Override
     public void bucketSort(Elem[] array, int lowindex, int highindex, boolean reversed) {
         // FILL IN CODE
+        System.out.println("lowindex is " + lowindex + " highindex is " + highindex);
+        int bucketSize = (highindex - lowindex + 1) / 2;
+        System.out.println("bucket size is " + bucketSize);
+        LinkedList[] bucket = new LinkedList[bucketSize];
+        for(int i = 0; i < bucket.length; i++){
+            bucket[i] = new LinkedList();
+        }
+        int max = -1;
+        for(int i = lowindex; i <= highindex; i++){
+            int temp = array[i].key();
+            if(temp >= max) max = temp;
+        }
+        System.out.println("max is " + max);
+        double rangeTemp = (max + 1) / (double) bucketSize;
+        System.out.println("rangeTemp is "+ rangeTemp);
+        int range =(int) Math.ceil(rangeTemp);
+        System.out.println("range is "+ range);
+        for(int i = lowindex; i <= highindex; i++){
+            int temp = array[i].key();
+            int dest = temp / range;
+            System.out.println("temp is " + temp);
+            System.out.println("dest is " + dest);
+            System.out.println("******************************");
+            if(!reversed){
+                bucket[dest].insert(array[i]);
+            }else {
+                bucket[dest].insertReverse(array[i]);
+            }
+        }
+        int k = lowindex;
+        if(!reversed) {
+            for (int i = 0; i < bucketSize; i++) {
+                Elem temp = bucket[i].removeFirst();
+                while (temp != null) {
+                    array[k] = temp;
+                    k++;
+                    temp = bucket[i].removeFirst();
+                }
+            }
+        }else {
+            for (int i = bucketSize - 1; i >= 0; i--) {
+                Elem temp = bucket[i].removeFirst();
+                while (temp != null) {
+                    array[k] = temp;
+                    k++;
+                    temp = bucket[i].removeFirst();
+                }
+            }
+        }
+
     }
 
     /**
@@ -266,7 +396,6 @@ public class SortingAlgorithms  implements SortInterface {
          * @return the smallest element in the heap
          */
         public void removeMax() {
-            System.out.println("low is " + low + " high is " + high + " size is " + size);
             swap(low, size + low - 1); // swap the end of the heap into the root
             size--;  	   // removed the end of the heap
             // fix the heap property - push down as needed
@@ -292,6 +421,101 @@ public class SortingAlgorithms  implements SortInterface {
                 swap(position, largestChild);
                 position = largestChild;
             }
+        }
+
+    }
+
+    /** LinkedList class - implementation of a singly linked list.
+     * Each node stores an element of type Object,
+     * and a reference to the next node. The first element is stored
+     * in the head (no dummy head in this implementation).
+     * */
+    private class LinkedList {
+
+        private Node head;
+
+        /** Constructor of the class.
+         * The list is empty (head and tail are null). */
+        LinkedList() {
+            head = null;
+
+        }
+
+        public void insert(Elem e){
+            if(head == null){
+                head = new Node(e, null);
+                return;
+            }
+            if(head.element.key() >= e.key()){
+                Node newNode = new Node(e, head);
+                head = newNode;
+                return;
+            }
+            Node cur = head;
+            while(cur.next != null){
+                if(cur.next.element.key() >= e.key()){
+                    cur.next = new Node(e, cur.next);
+                    return;
+                }
+                cur = cur.next;
+            }
+            cur.next = new Node(e, null);
+        }
+
+        public void insertReverse(Elem e){
+            if(head == null){
+                head = new Node(e, null);
+                return;
+            }
+            if(head.element.key() <= e.key()){
+                Node newNode = new Node(e, head);
+                head = newNode;
+                return;
+            }
+            Node cur = head;
+            while(cur.next != null){
+                if(cur.next.element.key() <= e.key()){
+                    cur.next = new Node(e, cur.next);
+                    return;
+                }
+                cur = cur.next;
+            }
+            cur.next = new Node(e, null);
+        }
+
+        public Elem removeFirst(){
+            if(head == null) return null;
+            Elem temp = head.element;
+            head = head.next;
+            return temp;
+        }
+        // -------------------------------------------
+        /** Inner class Node. Represents a single node in a linked list.
+         *  Since Node is an inner class, we can access all its data fields
+         *  from the outer class LinkedList (even private ones).
+         *  */
+        private class Node {
+            Elem element;
+            Node next;
+
+            Node() {
+                this.element = null;
+                this.next = null;
+            }
+
+            Node(Elem elem, Node next) {
+                this.element = elem;
+                this.next = next;
+            }
+
+            Node next() {
+                return next;
+            }
+
+            Object element() {
+                return element;
+            }
+
         }
 
     }
