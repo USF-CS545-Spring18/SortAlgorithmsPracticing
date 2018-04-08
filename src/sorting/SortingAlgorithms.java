@@ -299,30 +299,76 @@ public class SortingAlgorithms  implements SortInterface {
      * @param m number of elements that fit into memory at once
      */
     public void externalSort(String inputFile, String outputFile, int n, int m) {
-        // FILL IN CODE
-        double dTimes = (double) n / m;
-        int times = (int) Math.ceil(dTimes);
-        int k = 0;
-        try(BufferedReader reader = new BufferedReader(new FileReader(inputFile))){
-            String line;
-            Comparable[] temp = new Comparable[m];
-            for(int i = 0; i < m; i++){
-                line = reader.readLine();
-                if(line == null) break;
-                int num = Integer.parseInt(line);
-                temp[i] = num;
-            }
-            quickSort(temp, 0, m - 1);
-            try(PrintWriter pw = new PrintWriter("temp" + k)){
-                for(int i = 0; i < m; i++){
-                    pw.write(temp[i] + "\n");
+        Comparable[] temp = new Comparable[m];
+
+        try (FileReader f = new FileReader(inputFile);
+             BufferedReader br = new BufferedReader(f)){
+            int times = (int) Math.ceil((double) n/m);
+
+            int i, j;
+            for (i = 0; i < times; i++) {
+                for (j = 0; j < m; j++) {
+                    String s = br.readLine();
+                    if (s != null)
+                        temp[j] = Integer.parseInt(s);
+                    else
+                        break;
                 }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                quickSort(temp, 0, m - 1);
+
+                PrintWriter pw = new PrintWriter("temp" + i + ".txt");
+                for (int k = 0; k < j; k++)
+                    pw.println(temp[k]);
+
+                pw.close();
             }
-        }catch (IOException e) {
+
+            br.close();
+
+            int[] topNums = new int[times];
+            BufferedReader[] brs = new BufferedReader[times];
+
+            for (i = 0; i < times; i++) {
+                brs[i] = new BufferedReader(new FileReader("temp" + i + ".txt"));
+                String t = brs[i].readLine();
+                if (t != null)
+                    topNums[i] = Integer.parseInt(t);
+                else
+                    topNums[i] = Integer.MAX_VALUE;
+            }
+
+            PrintWriter pw = new PrintWriter(outputFile);
+
+            for (i = 0; i < n; i++) {
+                int min = topNums[0];
+                int minFile = 0;
+
+                for (j = 0; j < times; j++) {
+                    if (min > topNums[j]) {
+                        min = topNums[j];
+                        minFile = j;
+                    }
+                }
+
+                pw.println(min);
+                String t = brs[minFile].readLine();
+                if (t != null)
+                    topNums[minFile] = Integer.parseInt(t);
+                else
+                    topNums[minFile] = Integer.MAX_VALUE;
+
+            }
+            for (i = 0; i < times; i++)
+                brs[i].close();
+
+            pw.close();
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     private class MaxHeap {
