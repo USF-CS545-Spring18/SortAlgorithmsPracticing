@@ -239,9 +239,7 @@ public class SortingAlgorithms  implements SortInterface {
     @Override
     public void bucketSort(Elem[] array, int lowindex, int highindex, boolean reversed) {
         // FILL IN CODE
-        System.out.println("lowindex is " + lowindex + " highindex is " + highindex);
         int bucketSize = (highindex - lowindex + 1) / 2;
-        System.out.println("bucket size is " + bucketSize);
         LinkedList[] bucket = new LinkedList[bucketSize];
         for(int i = 0; i < bucket.length; i++){
             bucket[i] = new LinkedList();
@@ -251,17 +249,11 @@ public class SortingAlgorithms  implements SortInterface {
             int temp = array[i].key();
             if(temp >= max) max = temp;
         }
-        System.out.println("max is " + max);
         double rangeTemp = (max + 1) / (double) bucketSize;
-        System.out.println("rangeTemp is "+ rangeTemp);
         int range =(int) Math.ceil(rangeTemp);
-        System.out.println("range is "+ range);
         for(int i = lowindex; i <= highindex; i++){
             int temp = array[i].key();
             int dest = temp / range;
-            System.out.println("temp is " + temp);
-            System.out.println("dest is " + dest);
-            System.out.println("******************************");
             if(!reversed){
                 bucket[dest].insert(array[i]);
             }else {
