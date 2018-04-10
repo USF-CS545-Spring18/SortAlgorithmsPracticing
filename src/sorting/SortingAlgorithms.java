@@ -1,7 +1,6 @@
 package sorting;
 
 import java.io.*;
-import java.util.LinkedList;
 import java.util.Random;
 
 /**  A class that implements SortInterface. Has various methods
@@ -224,7 +223,6 @@ public class SortingAlgorithms  implements SortInterface {
     @Override
     public void hybridSort(Comparable[] array, int lowindex, int highindex) {
         // FILL ON CODE
-        int pivot; // index of the pivot
         if(highindex - lowindex + 1 <= 10){
             insertionSort(array, lowindex, highindex, false);
             return;
@@ -297,75 +295,66 @@ public class SortingAlgorithms  implements SortInterface {
      */
     public void externalSort(String inputFile, String outputFile, int n, int m) {
         Comparable[] temp = new Comparable[m];
-
+        double dTimes = (double) n / m;
+        int times = (int) Math.ceil(dTimes);
+        int i, j;
         try (FileReader f = new FileReader(inputFile);
-             BufferedReader br = new BufferedReader(f)){
-            int times = (int) Math.ceil((double) n/m);
-
-            int i, j;
+             BufferedReader br = new BufferedReader(f)) {
             for (i = 0; i < times; i++) {
                 for (j = 0; j < m; j++) {
                     String s = br.readLine();
-                    if (s != null)
-                        temp[j] = Integer.parseInt(s);
-                    else
-                        break;
+                    if (s == null) break;
+                    temp[j] = Integer.parseInt(s);
                 }
                 quickSort(temp, 0, m - 1);
-
                 PrintWriter pw = new PrintWriter("temp" + i + ".txt");
-                for (int k = 0; k < j; k++)
-                    pw.println(temp[k]);
-
+                for (int k = 0; k < j; k++) pw.println(temp[k]);
                 pw.close();
             }
-
             br.close();
-
-            int[] topNums = new int[times];
-            BufferedReader[] brs = new BufferedReader[times];
-
-            for (i = 0; i < times; i++) {
-                brs[i] = new BufferedReader(new FileReader("temp" + i + ".txt"));
-                String t = brs[i].readLine();
-                if (t != null)
-                    topNums[i] = Integer.parseInt(t);
-                else
-                    topNums[i] = Integer.MAX_VALUE;
-            }
-
-            PrintWriter pw = new PrintWriter(outputFile);
-
-            for (i = 0; i < n; i++) {
-                int min = topNums[0];
-                int minFile = 0;
-
-                for (j = 0; j < times; j++) {
-                    if (min > topNums[j]) {
-                        min = topNums[j];
-                        minFile = j;
-                    }
-                }
-
-                pw.println(min);
-                String t = brs[minFile].readLine();
-                if (t != null)
-                    topNums[minFile] = Integer.parseInt(t);
-                else
-                    topNums[minFile] = Integer.MAX_VALUE;
-
-            }
-            for (i = 0; i < times; i++)
-                brs[i].close();
-
-            pw.close();
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        try {
+            int[] arr = new int[times];
+            BufferedReader[] bufferArray = new BufferedReader[times];
+            for (i = 0; i < times; i++) {
+                bufferArray[i] = new BufferedReader(new FileReader("temp" + i + ".txt"));
+                String t = bufferArray[i].readLine();
+                if (t != null) {
+                    arr[i] = Integer.parseInt(t);
+                } else {
+                    arr[i] = Integer.MAX_VALUE;
+                }
+            }
+            PrintWriter pw = new PrintWriter(outputFile);
+            for (i = 0; i < n; i++) {
+                int min = arr[0];
+                int file = 0;
+                for (j = 0; j < times; j++) {
+                    if (min > arr[j]) {
+                        min = arr[j];
+                        file = j;
+                    }
+                }
+                pw.println(min);
+                String t = bufferArray[file].readLine();
+                if (t != null) {
+                    arr[file] = Integer.parseInt(t);
+                } else {
+                    arr[file] = Integer.MAX_VALUE;
+                }
+            }
+            for (i = 0; i < times; i++) bufferArray[i].close();
+            pw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
