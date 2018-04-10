@@ -23,6 +23,6 @@ Testing input size 1000000, sorted</br>
 Testing input size 1000000, reverse sorted</br>
 	Randomized quicksort: 345129690</br>
 	Hybrid sort: 332572172</br>
-*********Conclusion**************</br>
+=============Conclusion=================</br>
 1.No matter how big the array is, hybrid sort is faster.</br>
 2.No matter what type the array is(random, sorted, reversed sorted), hybred sort is faster.</br>
