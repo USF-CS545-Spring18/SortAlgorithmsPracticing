@@ -193,6 +193,13 @@ public class SortingAlgorithms  implements SortInterface {
         return low;
     }
 
+    /**
+     * find the secound largest number of the three input
+     * @param i1
+     * @param i2
+     * @param i3
+     * @return
+     */
     public int findTheMidian(int i1, int i2, int i3){
         int median = i3;
         if(i1 <= i2){
@@ -223,9 +230,7 @@ public class SortingAlgorithms  implements SortInterface {
             return;
         }
         if (lowindex < highindex) {
-            pivot = partition(array, lowindex, highindex);
-            hybridSort(array, lowindex, pivot - 1);
-            hybridSort(array, pivot + 1, highindex);
+            quickSort(array, lowindex, highindex);
         }
     }
 
@@ -363,6 +368,9 @@ public class SortingAlgorithms  implements SortInterface {
 
     }
 
+    /**
+     * the inner class MaxHeap
+     */
     private class MaxHeap {
         private Comparable[] heap; // the array to store the heap
 //        private int maxsize; // the size of the array
@@ -385,6 +393,9 @@ public class SortingAlgorithms  implements SortInterface {
             // Assigned MIN_VALUE so that it's easier to bubble up
         }
 
+        /**
+         * build the heap from bottom up
+         */
         private void buildBottomUp(){
             int end = high - 1;
             int start = parent(end);
@@ -502,6 +513,10 @@ public class SortingAlgorithms  implements SortInterface {
 
         }
 
+        /**
+         * insert the Elem into the sorted linkedlist
+         * @param e the element to insert;
+         */
         public void insert(Elem e){
             if(head == null){
                 head = new Node(e, null);
@@ -523,6 +538,10 @@ public class SortingAlgorithms  implements SortInterface {
             cur.next = new Node(e, null);
         }
 
+        /**
+         * insert the Elem into the sorted linkedlist in decreasing order
+         * @param e the element to insert;
+         */
         public void insertReverse(Elem e){
             if(head == null){
                 head = new Node(e, null);
@@ -544,6 +563,10 @@ public class SortingAlgorithms  implements SortInterface {
             cur.next = new Node(e, null);
         }
 
+        /**
+         * remove the first element in the linked list
+         * @return the first element
+         */
         public Elem removeFirst(){
             if(head == null) return null;
             Elem temp = head.element;
